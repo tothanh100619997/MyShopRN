@@ -15,7 +15,7 @@ StatusBar.setHidden(true);
 
 const myDrawer = createDrawerNavigator(
 	{
-		Main,
+		Main,		
 		Authentication,
 		ChangeInfo,
 		OrderHistory,

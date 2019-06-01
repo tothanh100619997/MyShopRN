@@ -1,25 +1,36 @@
 import React, { Component } from "react";
 import { View, TextInput, Text, TouchableOpacity, StyleSheet, Dimensions, Image } from "react-native";
-
-
 import IconBack from '../../media/appIcon/backs.png'
-
-
-export default class ChangeInfo extends Component {
+import {connect} from 'react-redux'
+import { logged} from '../../actions'
+import _changeInfo from '../../api/_changeInfo'
+import getToken from '../../api/getToken'
+ class ChangeInfo extends Component {
     constructor(props) {
         super(props)
+        const { name, address, phone } = props.user;
         this.state = {
-            name: "Nguyen Thanh To",
-            address: " 226/3 Linh Xuan, Thu Duc",
-            phoneNumber: "0358983660",
+            name,
+            address,
+            phone
            
         }
     }
     _goBackHome = () => {
         this.props.navigation.goBack()
     }
+    onChangeInfo =() =>{
+      const {  name, phone, address} = this.state
+      getToken()
+      .then(token=>{
+          _changeInfo(token, name, phone, address).then(e=>{
+              alert("Ban da sua thanh cong")
+              this.props.sendUser(e)
+          })
+      })
+    }
     render() {
-        const { name, address, phoneNumber } = this.state
+        const { name, address, phone } = this.state
         const {
             container,
             headerContainer,
@@ -58,12 +69,12 @@ export default class ChangeInfo extends Component {
                     <TextInput
                         style={inputStyle}
                         placeholder="Enter your number phone"
-                        value={phoneNumber}
-                        onChangeText={text => this.setState({ placeholder: text })}
+                        value={phone}
+                        onChangeText={text => this.setState({ phone: text })}
                         
                     />
                    
-                    <TouchableOpacity style={bigButton}>
+                    <TouchableOpacity onPress={this.onChangeInfo} style={bigButton}>
                         <Text style={txtButton}>CHANGE YOUR INFORMATION</Text>
                     </TouchableOpacity>
                 </View>
@@ -72,6 +83,17 @@ export default class ChangeInfo extends Component {
         );
     }
 }
+const mapDispatchToProps = dispatch => {
+    return {
+        sendUser: (user) => dispatch(logged(user))
+    }
+}
+const mapStateToProps = state => {
+    return {
+        user: state.loginReducer
+    }
+}
+export default connect(mapStateToProps, mapDispatchToProps)(ChangeInfo)
 const { width, height } = Dimensions.get("window");
 //411
 //683

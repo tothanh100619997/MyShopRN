@@ -15,6 +15,7 @@ export default class Authentication extends Component {
             isSignIn: true
         }
     }
+    
     _goToSignIn =()=>{
         this.setState({
             isSignIn:true
@@ -28,7 +29,10 @@ export default class Authentication extends Component {
     _goBackHome =()=>{
         this.props.navigation.goBack()
     }
-    render() {
+    _openDraw =()=>{
+        this.props.navigation.openDrawer();
+    }
+   render() {
         const { isSignIn } = this.state
         const {
             headerContainer,
@@ -41,7 +45,7 @@ export default class Authentication extends Component {
             textActive,
             textInActive
         } = styles;
-        let bodyJSX = isSignIn ? <SignIn  /> : <SignUp  />
+        let bodyJSX = isSignIn ? <SignIn goBack={this._goBackHome}  openDraw ={this._openDraw} /> : <SignUp goToSignIn={this._goToSignIn} />
         return (
             <View style={container}>
 

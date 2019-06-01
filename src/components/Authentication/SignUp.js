@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native'
-
+import { View, Text, StyleSheet, TouchableOpacity, TextInput,Alert } from 'react-native'
+import _register from '../../api/_register'
 
 export default class SignUp extends Component {
     constructor(props){
@@ -11,6 +11,45 @@ export default class SignUp extends Component {
             password:"",
             passwordR:""
         }
+    }
+    removeEmail =()=>{
+        this.setState({
+            name: "",
+            email: "",
+            password: "",
+            passwordR: ""
+        })
+    }
+    onSuccess(){
+        Alert.alert(
+            'Notice',
+            'Sign up successfully',
+            [
+                {text:'OK',onPress:()=>{
+                    this.removeEmail
+                    this.props.goToSignIn()
+                }}
+            ],
+            {cancelable:false}
+        )
+    }
+    onFail(){
+        Alert.alert(
+            'Notice',
+            'Email has been used by other',
+            [
+                { text: 'OK', onPress: () => this.removeEmail.bind(this) }
+            ],
+            { cancelable: false }
+        );
+    }
+    onSignUp =()=>{
+        const { name, email, password } = this.state;
+        _register(email, name, password)
+            .then(res => {
+                if (res === 'THANH_CONG') return this.onSuccess();
+                this.onFail();
+            });
     }
     render() {
         const {email, password, name, passwordR} = this.state
@@ -45,12 +84,12 @@ export default class SignUp extends Component {
                 />
                 <TextInput
                     style={inputStyle}
-                    placeholder="Enter your Password"
+                    placeholder="Enter your Password again"
                     value={passwordR}
                     onChangeText={text => this.setState({ passwordR: text })}
                     secureTextEntry={true}
                 />
-                <TouchableOpacity style={bigButton}>
+                <TouchableOpacity style={bigButton} onPress ={this.onSignUp}>
                     <Text style={txtButton}>SIGN UP NOW</Text>
                 </TouchableOpacity>
                 

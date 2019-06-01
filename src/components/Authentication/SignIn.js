@@ -1,8 +1,11 @@
 import React, { Component } from 'react'
 import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native'
+import saveToken from '../../api/saveToken'
+import _login from '../../api/_login'
+import {connect} from 'react-redux'
+import { logged } from '../../actions';
 
-
-export default class SignIn extends Component {
+class SignIn extends Component {
     constructor(props){
         super(props)
         this.state={
@@ -10,7 +13,19 @@ export default class SignIn extends Component {
             password:""
         }
     }
+    onSignIn =()=>{
+        const { email, password } = this.state;
+        _login(email, password)
+            .then(res => {     
+                this.props.goBack();          
+                this.props.openDraw();
+                this.props.sendUser(res.user)
+                saveToken(res.token);
+            })
+            .catch(err => console.log(err));
+    }
     render() {
+       
         const {email, password} = this.state
         const {
             inputStyle,
@@ -34,7 +49,7 @@ export default class SignIn extends Component {
                     onChangeText={text => this.setState({ password: text })}
                     secureTextEntry={true}
                 />
-                <TouchableOpacity  style={bigButton}>
+                <TouchableOpacity  style={bigButton} onPress = {this.onSignIn}>
                     <Text style={txtButton}>SIGN IN NOW</Text>
                 </TouchableOpacity>
                 
@@ -43,7 +58,12 @@ export default class SignIn extends Component {
         );
     }
 }
-3
+const mapDispatchToProps = dispatch=>{
+    return{
+        sendUser: (user) => dispatch(logged(user))
+    }
+}
+export default connect(null,mapDispatchToProps)(SignIn)
 const styles = StyleSheet.create({
 
     container:{

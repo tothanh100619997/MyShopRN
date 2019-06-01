@@ -1,13 +1,11 @@
 import React, { Component } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Image, Dimensions } from "react-native";
 import profile from '../../media/temp/avatar.jpg'
-export default class Menu extends Component {
-    constructor(props) {
-        super(props)
-        this.state = {
-            isLogin: true
-        }
-    }
+import {logged} from '../../actions'
+import {connect} from 'react-redux'
+import saveToken from '../../api/saveToken'
+class Menu extends Component {
+    
     componentDidMount() {
         //  this.props.navigation.openDrawer()
     }
@@ -18,15 +16,15 @@ export default class Menu extends Component {
        this.props.navigation.navigate("ChangeInfo")
     }
     _onSignOut =()=>{
-        this.setState({
-            isLogin:false
-        })
+      this.props.sendUser(null)
+      saveToken("")
     }
     _gotoAuthentication =()=>{
         this.props.navigation.navigate("Authentication")
     }
     render() {
-        const { isLogin } = this.state
+       const {user} = this.props
+        
         const { container,
             profileContainer,
             loginContainer,
@@ -68,14 +66,25 @@ export default class Menu extends Component {
             <View style={container}>
                 <View style={profileContainer}>
                     <Image source={profile} style={avatarProfile} />
-                    <Text style={userNameText}>{isLogin ? "Nguyen Thanh To" : ""}</Text>
+                    <Text style={userNameText}>{user ? user.name : ""}</Text>
                 </View>
-                {isLogin ? loginJsx :logoutJsx }
+                {user ? loginJsx :logoutJsx }
 
             </View>
         );
     }
 }
+const mapDispatchToProps = dispatch => {
+    return {
+        sendUser: (user) => dispatch(logged(user))
+    }
+}
+const mapStateToProps =state =>{
+    return{
+        user:state.loginReducer
+    }
+}
+export default connect(mapStateToProps,mapDispatchToProps)(Menu)
 const widthMenu = Dimensions.get("window").width * 0.6
 const styles = StyleSheet.create({
     container: {
