@@ -7,7 +7,7 @@ import { Header } from 'react-navigation'
 import {url} from '../../../../actions/types'
 import _getCart from "../../../../api/_getCart";
 import _addToCart from "../../../../api/_addToCart";
-import {deleteItem} from '../../../../actions'
+import {deleteItem,increaseCount,decreaseCount} from '../../../../actions'
 import {connect} from 'react-redux'
 
 
@@ -54,10 +54,11 @@ class Cart extends Component {
     goToDetail = (product) => {
         this.props.navigation.push("DetailProduct",{product})
     }
-    onChangeValue = () => {
-        this.setState({
-            value: this.state.value + 1
-        })
+   onDecreaseCount =(id) =>{
+       this.props.decreaseCount(id)
+   }
+    onIncreaseCount =(id)=>{
+        this.props.increaseCount(id)
     }
     removeItem(id){
         this.props.deleteItem(id)
@@ -116,9 +117,9 @@ class Cart extends Component {
                         </View>
                         <View style={styles.row3}>
                             <View style={{ flexDirection: "row" }}>
-                                <TouchableOpacity onPress={this.onChangeValue}><Text style={{ fontSize: 20, color: "#000" }}>+</Text></TouchableOpacity>
+                                <TouchableOpacity onPress={()=>this.onIncreaseCount(item.product.id)}><Text style={{ fontSize: 20, color: "#000" }}>+</Text></TouchableOpacity>
                                 <Text style={{ fontSize: 20, color: "#000", marginHorizontal: 40 }}>{item.quantity}</Text>
-                                <TouchableOpacity onPress={this.onChangeValue}><Text style={{ fontSize: 20, color: "#000" }}>-</Text></TouchableOpacity>
+                                <TouchableOpacity onPress={()=>this.onDecreaseCount(item.product.id)}><Text style={{ fontSize: 20, color: "#000" }}>-</Text></TouchableOpacity>
                             </View>
                             <TouchableOpacity onPress={()=>this.goToDetail(item.product)}><Text style={{ color: "#CA488A" }}>SHOW DETAILS</Text></TouchableOpacity>
 
@@ -137,7 +138,9 @@ const mapStateToProps =state=>{
 }
 const mapDispatchToProps = dispatch=>{
     return{
-        deleteItem: (id)=>dispatch(deleteItem(id))
+        deleteItem: (id)=>dispatch(deleteItem(id)),
+        increaseCount: (id)=>dispatch(increaseCount(id)),
+        decreaseCount: (id) => dispatch(decreaseCount(id))
     }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(Cart)
